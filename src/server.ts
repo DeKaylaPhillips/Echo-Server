@@ -1,9 +1,7 @@
 import express from 'express';
+import indexController from 'controllers';
+export const app = express();
  
-const app = express();
- 
-app.get('/', (request, response) => {
-  response.send('Hello!');
-});
+app.get('/', indexController);
  
 app.listen(3000);
