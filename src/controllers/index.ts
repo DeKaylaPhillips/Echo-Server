@@ -1,7 +1,7 @@
-import type { Request, Response } from "express";
+import { type Request, type Response } from 'express'
 
-const indexController = (request:Request, response:Response) => {
-  response.send('Hello!');
-};
+const indexController = (request: Request, response: Response): void => {
+  response.send('Hello!')
+}
 
-export default indexController;
+export default indexController
