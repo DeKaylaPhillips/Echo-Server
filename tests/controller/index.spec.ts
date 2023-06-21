@@ -8,7 +8,6 @@ describe('Index Controller', () => {
 
     indexController(mockRequest as Request, mockResponse as Response)
 
-    expect(mockResponse.send).toHaveBeenCalled()
     expect(mockResponse.send).toHaveBeenCalledTimes(1)
     expect(mockResponse.send).toHaveBeenCalledWith('Hello!')
   })
