@@ -1,9 +1,10 @@
-import express from 'express'
-import indexController from '../src/controllers/index'
-import messageController from '../src/controllers/message'
-export const app = express()
+import net from 'node:net'
 
-app.get('/', indexController)
-app.get('/:message', messageController)
+const port: number = 3000
+const host: string = 'localhost'
 
-app.listen(3000)
+const server = net.createServer((socket: net.Socket): void => {})
+
+server.listen(port, host, (): void => {
+  console.log(`TCP server has established a connection at http://${host}:${port}/.`)
+})
