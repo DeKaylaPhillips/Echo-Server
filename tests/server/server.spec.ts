@@ -23,7 +23,7 @@ jest.mock('net', () => {
   }
 })
 
-describe('Console', () => {
+describe('Server', () => {
   let server: Server
   let logMock: jest.SpyInstance
   const host: string = 'localhost'

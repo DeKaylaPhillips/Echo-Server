@@ -16,7 +16,9 @@ describe('Index Controller', () => {
 
 describe('Message Controller', () => {
   test("responds with a user'/s message", () => {
-    const mockRequest: Partial<Request<any>> = { params: { message: 'I am a user!' } }
+    const mockRequest: Partial<Request<any>> = {
+      params: { message: 'I am a user!' }
+    }
     const mockResponse: Partial<Response<any>> = { send: jest.fn() }
 
     messageController(mockRequest as Request, mockResponse as Response)
