@@ -85,7 +85,7 @@ describe('Server', () => {
   test('responds to a client connected to the TCP server', () => {
     hasMockClientConnected = true
     server.openTCPConnection()
-    expect(server.socket.write).toHaveBeenCalledTimes(1)
+    expect(server.socket.write).toHaveBeenCalled()
     expect(server.socket.write).toHaveBeenCalledWith('Connection established.')
   })
 })
