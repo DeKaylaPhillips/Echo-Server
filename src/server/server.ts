@@ -4,6 +4,8 @@ class Server {
   port: number
   host: string
   connectionMsg: string
+  server: net.Server
+  socket: net.Socket
 
   constructor (port: number, host: string) {
     this.port = port
@@ -12,8 +14,14 @@ class Server {
   }
 
   openTCPConnection (): void {
-    const server: net.Server = net.createServer()
-    server.listen(this.port, this.host, (): void => {
+    this.server = net.createServer((socket) => {
+      this.socket = socket
+      this.socket.write('Connection established.')
+    })
+    this.server.on('connection', () => {
+      console.log('Client has connected.')
+    })
+    this.server.listen(this.port, this.host, (): void => {
       console.log(this.connectionMsg)
     })
   }
