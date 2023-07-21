@@ -39,41 +39,40 @@ Node.js version 18 or higher
     % npm run dev
     ```
 
-    *The following text should appear in the terminal after running the previous command which indicates the server has successfully started.*
+    *The following text should appear in the server terminal after running the previous command which indicates the server has successfully started.*
 
     ```bash
     > echo-server@1.0.0 dev
     > ts-node ./src/server.ts
+
+    TCP server at http://localhost:3000/.
     ```
 
-6. Open the web browser to Port 5000
+6. Connect to the server as a client in a separate terminal tab.
+    1. This command should be run *AFTER* the server has already been ran.
+    2. *Note*: The Netcat (nc) command for reading and writing data between two computer networks comes pre-installed on MacOS & Linux machines. Windows users may be required to install Netcat or a similar utility.
 
-    ```text
-    localhost:5000
+    ```bash
+    % nc localhost 3000
     ```
 
-7. Stop the server
+    *The following text should appear in the client terminal after running the previous command which indicates the connection to the server has been established.*
+
+    ```bash
+    Connection established.
+
+    Please enter a message:
+    ```
+
+    After entering a message and sending it to the server, the following text should appear, indicating that the client connection has been closed:
+
+    ```bash
+    - Some client message, here -
+    Client connection closed.
+    ```
+
+7. To manually stop the server, enter the following command within the server terminal.
 
     ```bash
     % CTRL + C
     ```
-
-*Note: With every new response to be sent, **refresh** the web browser to ensure the server receives the new client request.*
-
-### Usage/Examples
-
-Within the `response.send()` method of the app object's HTTP methods, pass a body of data to it.
-
-```typescript
-    // src/server.ts
-
-    app.get('/', (request, response) => {
-        // The body of data passed to the send() method is sent from the server and will appear to the client on the web browser.
-        response.send("Hello, world!");
-    });
-```
-
-The body can be a Buffer object, a String, an object, Boolean, or an Array.
-
-*Refer to the Official Express Documentation:*
-<https://expressjs.com/en/5x/api.html#res.send:~:text=res.send(%5Bbody,as%20shown%20below%3A>
