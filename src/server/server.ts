@@ -20,13 +20,8 @@ class Server {
         'Connection established.\n\nPlease enter a message:\n\n'
       )
       this.socket.on('data', (data: Buffer) => {
-        const message = data.toString().trim()
-        console.log(`Client says...:\n\n${message}`)
-        this.socket.end('Client connection closed.\n')
+        this.socket.end('\nClient connection closed.\n')
       })
-    })
-    this.server.on('connection', () => {
-      console.log('Client has connected.\n')
     })
     this.server.listen(this.port, this.host, (): void => {
       console.log(this.connectionMsg)
