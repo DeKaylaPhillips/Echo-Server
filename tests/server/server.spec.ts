@@ -1,21 +1,38 @@
 import Server from '../../src/server/server'
-
 let hasMockClientConnected = false
 
 jest.mock('net', () => {
   type MaybeNumber = number | undefined
   type MaybeString = string | undefined
   type MaybeVoidFunction = (() => void) | undefined
-  type SocketCallback = ((socket: any) => void) | undefined
+  type MaybeServerCallback = ((socket: any) => void) | undefined
+  type StringOrUint8Arr = string | Uint8Array
+  type WriteFunction = (data: StringOrUint8Arr) => boolean
+  type SocketEventEmitter = (
+    eventName: string,
+    eventListener: (data: Buffer) => void
+  ) => void
+  type EndFunction = (
+    buffer: StringOrUint8Arr,
+    callback: MaybeVoidFunction
+  ) => void
 
   class MockSocket {
-    write: (
-      data: string | Uint8Array
-    ) => boolean = jest.fn()
+    write: WriteFunction = jest.fn()
+    end: EndFunction = jest.fn()
+    on: SocketEventEmitter
+    constructor () {
+      this.on = (eventName, eventListener) => {
+        if (eventName === 'data') {
+          const data: Buffer = Buffer.from('Some test client data.')
+          eventListener(data)
+        }
+      }
+    }
   }
 
   return {
-    createServer: (callBack: SocketCallback) => {
+    createServer: (callBack: MaybeServerCallback) => {
       const socket = new MockSocket()
       if (hasMockClientConnected) {
         if (callBack === undefined) {
@@ -69,23 +86,34 @@ describe('Server', () => {
 
   test('logs a message when the TCP server is open for connections', () => {
     server.openTCPConnection()
-    expect(logMock).toHaveBeenCalledTimes(1)
+    expect(logMock).toHaveBeenCalled()
     expect(logMock).toHaveBeenCalledWith(
       `TCP server at http://${host}:${port}/.`
     )
   })
 
-  test('logs a message when a TCP connection is established', () => {
+  test('responds to a client when a TCP connection is established', () => {
     hasMockClientConnected = true
     server.openTCPConnection()
-    expect(logMock).toHaveBeenCalledTimes(2)
-    expect(logMock).toHaveBeenCalledWith('Client has connected.')
+    expect(server.socket.write).toHaveBeenCalledWith(
+      'Connection established.\n\nPlease enter a message:\n\n'
+    )
   })
 
-  test('responds to a client connected to the TCP server', () => {
+  test('allows a client to write to the TCP server', () => {
     hasMockClientConnected = true
     server.openTCPConnection()
-    expect(server.socket.write).toHaveBeenCalled()
-    expect(server.socket.write).toHaveBeenCalledWith('Connection established.')
+    server.socket.on('data', (clientData) => {
+      const clientMessage: string = clientData.toString().trim()
+      expect(clientMessage).toBe('Some test client data.')
+    })
+  })
+
+  test('closes a connection after a client writes to the server', () => {
+    hasMockClientConnected = true
+    server.openTCPConnection()
+    expect(server.socket.end).toHaveBeenCalledWith(
+      '\nClient connection closed.\n'
+    )
   })
 })

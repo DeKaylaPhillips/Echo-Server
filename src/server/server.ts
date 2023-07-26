@@ -16,10 +16,12 @@ class Server {
   openTCPConnection (): void {
     this.server = net.createServer((socket) => {
       this.socket = socket
-      this.socket.write('Connection established.')
-    })
-    this.server.on('connection', () => {
-      console.log('Client has connected.')
+      this.socket.write(
+        'Connection established.\n\nPlease enter a message:\n\n'
+      )
+      this.socket.on('data', (data: Buffer) => {
+        this.socket.end('\nClient connection closed.\n')
+      })
     })
     this.server.listen(this.port, this.host, (): void => {
       console.log(this.connectionMsg)
