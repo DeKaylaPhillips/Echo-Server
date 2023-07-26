@@ -4,7 +4,7 @@ let hasMockClientConnected = false
 jest.mock('net', () => {
   type MaybeNumber = number | undefined
   type MaybeString = string | undefined
-  type MaybeVoidFunction = (() => void) | undefined
+  type MaybeVoidFunction = VoidFunction | undefined
   type MaybeServerCallback = ((socket: any) => void) | undefined
   type StringOrUint8Arr = string | Uint8Array
   type WriteFunction = (data: StringOrUint8Arr) => boolean
@@ -51,17 +51,6 @@ jest.mock('net', () => {
             return
           }
           callback()
-        },
-        on: (
-          eventName: MaybeString,
-          eventListener: VoidFunction
-        ): void => {
-          if (!hasMockClientConnected) {
-            return
-          } else if (eventListener === undefined) {
-            return
-          }
-          eventListener()
         }
       }
     }
@@ -70,26 +59,22 @@ jest.mock('net', () => {
 
 describe('Server', () => {
   let server: Server
-  let logMock: jest.SpyInstance
   const host: string = 'localhost'
   const port: number = 3000
 
   beforeEach(() => {
     server = new Server(port, host)
     hasMockClientConnected = false
-    logMock = jest.spyOn(console, 'log').mockImplementation()
-  })
-
-  afterEach(() => {
-    logMock.mockRestore()
   })
 
   test('logs a message when the TCP server is open for connections', () => {
+    const logMock = jest.spyOn(console, 'log').mockImplementation()
     server.openTCPConnection()
     expect(logMock).toHaveBeenCalled()
     expect(logMock).toHaveBeenCalledWith(
       `TCP server at http://${host}:${port}/.`
     )
+    logMock.mockRestore()
   })
 
   test('responds to a client when a TCP connection is established', () => {
