@@ -116,4 +116,14 @@ describe('Server', () => {
       '\nClient connection closed.\n'
     )
   })
+
+  test('echoes the data received from a client', () => {
+    hasMockClientConnected = true
+    server.openTCPConnection()
+    server.socket.on('data', () => {
+      expect(server.socket.write).toHaveBeenCalledWith(
+        '\nServer received: Some test client data.'
+      )
+    })
+  })
 })

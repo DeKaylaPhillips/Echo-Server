@@ -20,6 +20,7 @@ class Server {
         'Connection established.\n\nPlease enter a message:\n\n'
       )
       this.socket.on('data', (data: Buffer) => {
+        this.socket.write(`\nServer received: ${data.toString()}`)
         this.socket.end('\nClient connection closed.\n')
       })
     })
