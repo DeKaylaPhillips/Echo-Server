@@ -8,17 +8,17 @@ class ClientHandler {
   }
 
   handleClientData (): void {
-    this.writeData()
-    this.readData()
+    this.#writeData()
+    this.#readData()
   }
 
-  private writeData (): void {
+  #writeData (): void {
     this.socket.write(
       'Connection established.\n\nPlease enter a message:\n\n'
     )
   }
 
-  private readData (): void {
+  #readData (): void {
     this.socket.on('data', (data: Buffer) => {
       this.socket.write(`\nServer received: ${data.toString().trim()}\n`)
       this.socket.end('\nClient connection closed.\n')
