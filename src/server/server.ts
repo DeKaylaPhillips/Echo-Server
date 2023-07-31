@@ -1,5 +1,5 @@
 import net from 'net'
-
+import ClientHandler from './clientHandler'
 class Server {
   port: number
   host: string
@@ -14,16 +14,11 @@ class Server {
   }
 
   openTCPConnection (): void {
-    this.server = net.createServer((socket) => {
+    this.server = net.createServer((socket: net.Socket) => {
       this.socket = socket
-      this.socket.write(
-        'Connection established.\n\nPlease enter a message:\n\n'
-      )
-      this.socket.on('data', (data: Buffer) => {
-        this.socket.end('\nClient connection closed.\n')
-      })
-    })
-    this.server.listen(this.port, this.host, (): void => {
+      const connection: ClientHandler = new ClientHandler(this.socket)
+      connection.handleClientData()
+    }).listen(this.port, this.host, (): void => {
       console.log(this.connectionMsg)
     })
   }

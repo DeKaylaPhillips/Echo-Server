@@ -2,66 +2,48 @@ import Server from '../../src/server/server'
 let hasMockClientConnected = false
 
 jest.mock('net', () => {
-  type MaybeNumber = number | undefined
-  type MaybeString = string | undefined
-  type MaybeVoidFunction = (() => void) | undefined
-  type MaybeServerCallback = ((socket: any) => void) | undefined
-  type StringOrUint8Arr = string | Uint8Array
-  type WriteFunction = (data: StringOrUint8Arr) => boolean
+  type OptNumber = number | undefined
+  type OptString = string | undefined
+  type OptVoidFunction = VoidFunction | undefined
+  type OptStringOrByteArr = string | Uint8Array
+  type OptServerCb = ((socket: any) => void) | undefined
+  type WriteFunction = (data: OptStringOrByteArr) => boolean
   type SocketEventEmitter = (
     eventName: string,
     eventListener: (data: Buffer) => void
   ) => void
   type EndFunction = (
-    buffer: StringOrUint8Arr,
-    callback: MaybeVoidFunction
-  ) => void
+    buffer: OptStringOrByteArr,
+    callback: OptVoidFunction)
+  => void
 
   class MockSocket {
     write: WriteFunction = jest.fn()
     end: EndFunction = jest.fn()
-    on: SocketEventEmitter
-    constructor () {
-      this.on = (eventName, eventListener) => {
-        if (eventName === 'data') {
-          const data: Buffer = Buffer.from('Some test client data.')
-          eventListener(data)
-        }
-      }
+    on: SocketEventEmitter = (eventName, eventListener) => {
+      if (eventName === 'data') {
+        const data: Buffer = Buffer.from('Some test client data.')
+        eventListener(data)
+      };
     }
-  }
+  };
 
   return {
-    createServer: (callBack: MaybeServerCallback) => {
+    createServer: (callBack: OptServerCb) => {
       const socket = new MockSocket()
-      if (hasMockClientConnected) {
-        if (callBack === undefined) {
-          return
-        }
+      if (hasMockClientConnected && callBack !== undefined) {
         callBack(socket)
-      }
+      };
 
       return {
         listen: (
-          port: MaybeNumber,
-          host: MaybeString,
-          callback: MaybeVoidFunction
+          port: OptNumber,
+          host: OptString,
+          callback: OptVoidFunction
         ): void => {
-          if (callback === undefined) {
-            return
-          }
-          callback()
-        },
-        on: (
-          eventName: MaybeString,
-          eventListener: VoidFunction
-        ): void => {
-          if (!hasMockClientConnected) {
-            return
-          } else if (eventListener === undefined) {
-            return
-          }
-          eventListener()
+          if (callback !== undefined) {
+            callback()
+          };
         }
       }
     }
@@ -70,26 +52,23 @@ jest.mock('net', () => {
 
 describe('Server', () => {
   let server: Server
-  let logMock: jest.SpyInstance
   const host: string = 'localhost'
   const port: number = 3000
 
   beforeEach(() => {
     server = new Server(port, host)
     hasMockClientConnected = false
-    logMock = jest.spyOn(console, 'log').mockImplementation()
-  })
-
-  afterEach(() => {
-    logMock.mockRestore()
   })
 
   test('logs a message when the TCP server is open for connections', () => {
+    const logMock: jest.SpyInstance = jest.spyOn(console, 'log')
+      .mockImplementation()
     server.openTCPConnection()
     expect(logMock).toHaveBeenCalled()
     expect(logMock).toHaveBeenCalledWith(
       `TCP server at http://${host}:${port}/.`
     )
+    logMock.mockRestore()
   })
 
   test('responds to a client when a TCP connection is established', () => {
@@ -115,5 +94,15 @@ describe('Server', () => {
     expect(server.socket.end).toHaveBeenCalledWith(
       '\nClient connection closed.\n'
     )
+  })
+
+  test('echoes the data received from a client', () => {
+    hasMockClientConnected = true
+    server.openTCPConnection()
+    server.socket.on('data', () => {
+      expect(server.socket.write).toHaveBeenCalledWith(
+        '\nServer received: Some test client data.\n'
+      )
+    })
   })
 })
