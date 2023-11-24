@@ -11,6 +11,6 @@ module.exports = {
     project: './tsconfig.json'
   },
   rules: {
-    "max-len": ["error", {"code": 80}]
+    'max-len': ['error', { code: 80 }]
   }
 }

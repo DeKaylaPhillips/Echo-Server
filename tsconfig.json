@@ -10,7 +10,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "tests/**/*.spec.ts"
+    "tests/**/*.spec.ts",
+    "./.eslintrc.cjs"
   ],
   "exclude": [
     "/node_modules"
