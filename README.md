@@ -27,13 +27,7 @@ Node.js version 18 or higher
     % npm install
     ```
 
-4. Configure TypeScript
-
-    ```bash
-    % tsc
-    ```
-
-5. Start the server
+3. Start the server
 
     ```bash
     % npm run dev
@@ -48,8 +42,8 @@ Node.js version 18 or higher
     TCP server at http://localhost:3000/.
     ```
 
-6. Connect to the server as a client in a separate terminal tab.
-    1. This command should be run *AFTER* the server has already been ran.
+4. Connect to the server as a client in a separate terminal tab.
+    1. This command should be ran *AFTER* the server's connection has already been established.
     2. *Note*: The Netcat (nc) command for reading and writing data between two computer networks comes pre-installed on MacOS & Linux machines. Windows users may be required to install Netcat or a similar utility.
 
     ```bash
@@ -71,7 +65,7 @@ Node.js version 18 or higher
     Client connection closed.
     ```
 
-7. To manually stop the server, enter the following command within the server terminal.
+5. To manually stop the server, enter the following command within the server terminal.
 
     ```bash
     % CTRL + C
