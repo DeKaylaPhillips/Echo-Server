@@ -1,5 +1,6 @@
 import net from 'net'
 import ClientHandler from './clientHandler'
+
 class Server {
   port: number
   host: string
